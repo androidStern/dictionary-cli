@@ -46,12 +46,25 @@ if (SpellChecker.isMisspelled(args[0])) {
   return
 }
 
-if (argv["s"]) {
+var sentencesOpts = argv["s"];
+var sentenceCount;
+
+if (sentencesOpts) {
   showSentences = true;
+  if (Number.isInteger(sentencesOpts)) {
+    sentenceCount = sentencesOpts;
+  }
 }
 
+var familyOpts = argv["f"]
+var familyCount;
+
 if (argv["f"]) {
-  showFamily= true;
+  showFamily = true;
+
+  if (Number.isInteger(familyOpts)) {
+    familyCount = familyOpts;
+  }
 }
 
 if (argv["d"]) {
@@ -101,7 +114,7 @@ vocabFetcher.getWord(args[0]).then(function(word) {
     printSentences(word);
   }
 
-  if (showFamily== true) {
+  if (showFamily == true) {
     printFamily(word);
   }
 })
@@ -133,7 +146,13 @@ function printDefinitions(wordObj) {
 
 function printSentences(wordObj) {
   console.log(chalk.underline.blue("Sentences"));
-  for(var i = 0; i < wordObj.sentences.length; i++) {
+  if (sentencesOpts === true) {
+    sentenceCount = wordObj.sentences.length;
+  }
+
+  sentenceCount = Math.min(wordObj.sentences.length, sentenceCount);
+
+  for(var i = 0; i < sentenceCount; i++) {
     var sentenceObj = wordObj.sentences[i]
     console.log(chalk.yellow(i+1) +") " + ManipulateSubstring.colorizeBetweenCharacterIndexes("green", sentenceObj.offsets[0], sentenceObj.offsets[1], sentenceObj.sentence));
   }
@@ -142,7 +161,14 @@ function printSentences(wordObj) {
 
 function printFamily(wordObj) {
   console.log(chalk.underline.blue("Family"));
-  for(var i = 0; i < wordObj.family.length; i++) {
+
+  if (familyOpts === true) {
+    familyCount = wordObj.family.length;
+  }
+
+  familyCount = Math.min(wordObj.family.length, familyCount);
+
+  for(var i = 0; i < familyCount; i++) {
     familyObj = wordObj.family[i];
     console.log(chalk.yellow(i+1) +") " + familyObj.word);
   }
